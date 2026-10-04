@@ -4,22 +4,22 @@
 @section('meta_description', 'Learn how Galaw Automations approaches discovery, planning, design, development, testing, deployment, and maintenance.')
 
 @section('content')
-<section class="border-b border-line bg-gradient-to-b from-mist to-foam">
-    <div class="mx-auto max-w-6xl px-4 py-16">
-        <div class="text-sm font-medium uppercase tracking-[0.18em] text-accent">Process</div>
-        <h1 class="mt-3 text-4xl font-semibold tracking-tight text-ink">How we work with clients</h1>
-        <p class="mt-5 max-w-2xl text-lg text-ink/70">A straightforward process designed to keep stakeholders aligned from the first conversation to ongoing support.</p>
+<section class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-kicker">Process</div>
+        <h1 class="page-title">How we work with clients</h1>
+        <p class="page-lead">A straightforward process designed to keep stakeholders aligned from the first conversation to ongoing support.</p>
     </div>
 </section>
 
-<section class="mx-auto max-w-6xl px-4 py-16">
-    <div class="space-y-4">
+<section class="site-shell py-16">
+    <div class="divide-y divide-line border-y border-line">
         @foreach ($stages as $index => $stage)
-            <div class="grid gap-4 rounded-2xl border border-line bg-white p-6 md:grid-cols-[80px_1fr] md:items-start">
-                <div class="text-sm font-semibold text-accent">0{{ $index + 1 }}</div>
+            <div class="grid gap-3 py-8 md:grid-cols-[5rem_1fr] md:gap-8">
+                <div class="text-sm font-semibold text-accent">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                 <div>
                     <h2 class="text-xl font-semibold text-ink">{{ $stage['title'] }}</h2>
-                    <p class="mt-2 text-sm leading-relaxed text-ink/70">{{ $stage['description'] }}</p>
+                    <p class="mt-2 text-sm leading-relaxed text-ink-muted">{{ $stage['description'] }}</p>
                 </div>
             </div>
         @endforeach

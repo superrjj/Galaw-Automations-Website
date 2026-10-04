@@ -6,57 +6,144 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    /* Site typeface: Poppins only */
+    --font-sans: 'Poppins', sans-serif;
+    --font-display: 'Poppins', sans-serif;
+    --font-mono: 'Poppins', sans-serif;
 
-    --color-ink: #0b1f33;
-    --color-ink-soft: #16324a;
-    --color-mist: #eef4f8;
-    --color-foam: #f7fafc;
-    --color-accent: #0f8b8d;
-    --color-accent-dark: #0b6b6d;
-    --color-line: #d5e1ea;
+    /* Brand: logo navy + teal */
+    --color-ink: #1a3350;
+    --color-ink-soft: #243f5c;
+    --color-ink-muted: #5a7085;
+    --color-paper: #ffffff;
+    --color-paper-soft: #f4f7f9;
+    --color-mist: #f4f7f9;
+    --color-foam: #ffffff;
+    --color-accent: #459e97;
+    --color-accent-dark: #378882;
+    --color-accent-soft: #e6f4f3;
+    --color-line: #d5dee6;
 }
 
 @layer base {
     html {
         scroll-behavior: smooth;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 
     body {
-        @apply bg-foam text-ink antialiased;
+        @apply bg-paper font-sans text-ink antialiased;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font-family: inherit;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    ::selection {
+        background: color-mix(in srgb, var(--color-accent) 28%, white);
+        color: var(--color-ink);
     }
 }
 
-@layer utilities {
-    .text-balance {
-        text-wrap: balance;
+@layer components {
+    .site-shell {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
     }
 
-    .hero-grid {
-        background-image:
-            linear-gradient(rgba(11, 31, 51, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(11, 31, 51, 0.04) 1px, transparent 1px);
-        background-size: 48px 48px;
+    .skip-link {
+        @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-paper focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink focus:shadow;
     }
 
-    .fade-up {
-        animation: fade-up 0.7s ease-out both;
+    .page-hero {
+        @apply border-b border-line bg-paper-soft;
     }
 
-    .fade-up-delay {
-        animation: fade-up 0.7s ease-out 0.15s both;
+    .page-hero-inner {
+        @apply mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-14;
     }
-}
 
-@keyframes fade-up {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
+    .page-kicker {
+        @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .page-title {
+        @apply mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl;
+    }
+
+    .page-lead {
+        @apply mt-4 max-w-2xl text-base leading-relaxed text-ink-muted;
+    }
+
+    .form-section {
+        @apply m-0 min-w-0 space-y-4 border-0 p-0;
+    }
+
+    .form-section + .form-section {
+        @apply mt-8 border-t border-line pt-8;
+    }
+
+    .form-section-title {
+        @apply float-left mb-4 w-full p-0 text-sm font-semibold text-ink;
+    }
+
+    .form-section-title + * {
+        clear: both;
+    }
+
+    .admin-panel {
+        @apply border border-line bg-paper;
+    }
+
+    .admin-table-wrap {
+        @apply overflow-x-auto border border-line bg-paper;
+    }
+
+    .nav-link {
+        @apply relative inline-flex items-center px-2.5 py-2 text-sm font-medium text-ink-muted transition hover:text-ink;
+    }
+
+    .nav-link::after {
+        content: '';
+        @apply absolute inset-x-2.5 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-accent transition duration-200;
+    }
+
+    .nav-link:hover::after,
+    .nav-link-active::after {
+        @apply scale-x-100;
+    }
+
+    .nav-link-active {
+        @apply font-semibold text-ink;
+    }
+
+    .link-arrow {
+        @apply inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition hover:text-accent-dark;
     }
 }

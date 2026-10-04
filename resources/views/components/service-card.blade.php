@@ -1,12 +1,12 @@
 @props(['service'])
 
-<a href="{{ route('services.show', $service) }}" class="group block rounded-2xl border border-line bg-white p-6 transition hover:border-accent/40 hover:shadow-sm">
-    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mist text-accent">
-        <x-icon :name="$service->icon ?: 'code'" class="h-5 w-5" />
+<a
+    href="{{ route('services.show', $service) }}"
+    {{ $attributes->merge(['class' => 'group block bg-paper p-5 transition hover:bg-paper-soft focus-visible:relative focus-visible:z-10 sm:p-6']) }}
+>
+    <div class="flex items-start justify-between gap-4">
+        <h3 class="text-base font-semibold text-ink group-hover:text-accent sm:text-lg">{{ $service->name }}</h3>
+        <x-icon name="arrow-right" class="mt-1 h-4 w-4 shrink-0 text-ink-muted group-hover:text-accent" aria-hidden="true" />
     </div>
-    <h3 class="mt-5 text-lg font-semibold text-ink group-hover:text-accent">{{ $service->name }}</h3>
-    <p class="mt-2 text-sm leading-relaxed text-ink/65">{{ $service->short_description }}</p>
-    <div class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
-        Learn more <x-icon name="arrow-right" class="h-4 w-4" />
-    </div>
+    <p class="mt-2 text-sm leading-relaxed text-ink-muted">{{ $service->short_description }}</p>
 </a>

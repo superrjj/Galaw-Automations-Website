@@ -17,7 +17,7 @@
                 <div><dt class="text-ink/50">Service</dt><dd>{{ $inquiry->service?->name ?: '—' }}</dd></div>
                 <div><dt class="text-ink/50">Budget</dt><dd>{{ $inquiry->budget ?: '—' }}</dd></div>
                 <div><dt class="text-ink/50">Timeline</dt><dd>{{ $inquiry->timeline ?: '—' }}</dd></div>
-                <div><dt class="text-ink/50">Status</dt><dd>{{ $inquiry->status->label() }}</dd></div>
+                <div><dt class="text-ink/50">Status</dt><dd><x-ui.badge :tone="$inquiry->status->tone()">{{ $inquiry->status->label() }}</x-ui.badge></dd></div>
             </dl>
         </div>
 

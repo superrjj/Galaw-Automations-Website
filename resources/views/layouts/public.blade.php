@@ -10,19 +10,22 @@
     <meta property="og:description" content="@yield('meta_description', $siteSettings['seo_description'] ?? '')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="@yield('canonical', url()->current())">
+    <link rel="icon" href="{{ asset('logo-galaw-automations-no-bg.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="flex min-h-screen flex-col">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
     <x-public.navbar :settings="$siteSettings ?? []" />
 
     @if (session('success'))
-        <div class="mx-auto w-full max-w-6xl px-4 pt-4">
+        <div class="site-shell pt-4">
             <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
         </div>
     @endif
 
-    <main class="flex-1">
+    <main id="main-content" class="flex-1">
         @yield('content')
     </main>
 

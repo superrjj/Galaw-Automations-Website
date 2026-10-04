@@ -7,14 +7,17 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-screen bg-mist text-ink">
+<body class="min-h-screen bg-paper-soft text-ink">
+    <a href="#admin-content" class="skip-link">Skip to content</a>
     <div class="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
-        <aside class="border-b border-line bg-ink text-white lg:border-b-0 lg:border-r lg:border-ink-soft">
+        <aside class="border-b border-line bg-ink text-white lg:border-b-0 lg:border-r lg:border-ink-soft" aria-label="Admin">
             <div class="px-5 py-6">
-                <a href="{{ route('admin.dashboard') }}" class="text-lg font-semibold tracking-tight">Galaw Admin</a>
-                <p class="mt-1 text-sm text-white/60">Website management</p>
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex bg-paper px-2 py-1.5">
+                    <x-brand-logo variant="mark" class="h-8" />
+                </a>
+                <p class="mt-3 text-sm text-white/60">Website management</p>
             </div>
-            <nav class="space-y-1 px-3 pb-6 text-sm">
+            <nav class="space-y-1 px-3 pb-6 text-sm" aria-label="Admin">
                 @php
                     $links = [
                         ['Dashboard', route('admin.dashboard'), request()->routeIs('admin.dashboard')],
@@ -29,9 +32,13 @@
                     ];
                 @endphp
                 @foreach ($links as [$label, $href, $active])
-                    <a href="{{ $href }}" class="block rounded-lg px-3 py-2 {{ $active ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">{{ $label }}</a>
+                    <a
+                        href="{{ $href }}"
+                        class="block rounded-md px-3 py-2 {{ $active ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }}"
+                        @if ($active) aria-current="page" @endif
+                    >{{ $label }}</a>
                 @endforeach
-                <a href="{{ route('home') }}" class="mt-4 block rounded-lg px-3 py-2 text-white/50 hover:text-white">View website</a>
+                <a href="{{ route('home') }}" class="mt-4 block rounded-md px-3 py-2 text-white/50 hover:text-white">View website</a>
                 <form method="POST" action="{{ route('logout') }}" class="px-3 pt-2">
                     @csrf
                     <button type="submit" class="text-white/50 hover:text-white">Log out</button>
@@ -40,15 +47,15 @@
         </aside>
 
         <div class="min-w-0">
-            <header class="flex items-center justify-between border-b border-line bg-white px-4 py-4 sm:px-6">
+            <header class="flex items-center justify-between border-b border-line bg-paper px-4 py-4 sm:px-6">
                 <div>
                     <h1 class="text-xl font-semibold tracking-tight">@yield('heading', 'Dashboard')</h1>
-                    <p class="text-sm text-ink/60">@yield('subheading', 'Manage Galaw Automations website content')</p>
+                    <p class="text-sm text-ink-muted">@yield('subheading', 'Manage Galaw Automations website content')</p>
                 </div>
-                <div class="text-sm text-ink/60">{{ auth()->user()?->name }}</div>
+                <div class="text-sm text-ink-muted">{{ auth()->user()?->name }}</div>
             </header>
 
-            <div class="px-4 py-6 sm:px-6">
+            <div id="admin-content" class="px-4 py-6 sm:px-6">
                 @if (session('success'))
                     <div class="mb-4">
                         <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>

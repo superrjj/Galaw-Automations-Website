@@ -7,6 +7,9 @@
     };
 @endphp
 
-<div {{ $attributes->merge(['class' => "rounded-xl border px-4 py-3 text-sm {$classes}"]) }}>
+<div
+    role="{{ $type === 'error' ? 'alert' : 'status' }}"
+    {{ $attributes->merge(['class' => "border px-4 py-3 text-sm {$classes}"]) }}
+>
     {{ $slot }}
 </div>

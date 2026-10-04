@@ -4,12 +4,12 @@
     'description' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'max-w-2xl']) }}>
+<div {{ $attributes->class('max-w-2xl')->except('id') }}>
     @if ($eyebrow)
-        <div class="text-sm font-medium uppercase tracking-[0.18em] text-accent">{{ $eyebrow }}</div>
+        <div class="page-kicker">{{ $eyebrow }}</div>
     @endif
-    <h2 class="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{{ $title }}</h2>
+    <h2 @if ($attributes->get('id')) id="{{ $attributes->get('id') }}" @endif class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{{ $title }}</h2>
     @if ($description)
-        <p class="mt-4 text-base leading-relaxed text-ink/70">{{ $description }}</p>
+        <p class="mt-3 text-base leading-relaxed text-ink-muted">{{ $description }}</p>
     @endif
 </div>

@@ -1,16 +1,45 @@
-@props(['label' => null, 'name', 'value' => null, 'rows' => 5])
+@props([
+    'label' => null,
+    'name',
+    'value' => null,
+    'rows' => 5,
+    'hint' => null,
+])
+
+@php
+    $required = $attributes->has('required');
+    $hasError = $errors->has($name);
+    $hintId = $hint ? "{$name}-hint" : null;
+    $errorId = $hasError ? "{$name}-error" : null;
+    $describedBy = collect([$hintId, $errorId])->filter()->implode(' ');
+    $fieldClasses = 'w-full resize-y rounded-md border bg-paper px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:ring-2 focus:ring-accent/20';
+    $fieldClasses .= $hasError
+        ? ' border-red-400 focus:border-red-500'
+        : ' border-line focus:border-accent';
+@endphp
 
 <div>
     @if ($label)
-        <label for="{{ $name }}" class="mb-1.5 block text-sm font-medium text-ink">{{ $label }}</label>
+        <label for="{{ $name }}" class="mb-1.5 block text-sm font-medium text-ink">
+            {{ $label }}
+            @if ($required)
+                <span class="text-accent" aria-hidden="true">*</span>
+            @endif
+        </label>
     @endif
     <textarea
         id="{{ $name }}"
         name="{{ $name }}"
         rows="{{ $rows }}"
-        {{ $attributes->merge(['class' => 'w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20']) }}
+        @if ($required) aria-required="true" @endif
+        @if ($hasError) aria-invalid="true" @endif
+        @if ($describedBy !== '') aria-describedby="{{ $describedBy }}" @endif
+        {{ $attributes->merge(['class' => $fieldClasses]) }}
     >{{ old($name, $value) }}</textarea>
+    @if ($hint)
+        <p id="{{ $hintId }}" class="mt-1 text-xs text-ink-muted">{{ $hint }}</p>
+    @endif
     @error($name)
-        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        <p id="{{ $errorId }}" class="mt-1 text-sm text-red-700" role="alert">{{ $message }}</p>
     @enderror
 </div>

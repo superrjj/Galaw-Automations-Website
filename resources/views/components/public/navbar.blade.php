@@ -1,41 +1,91 @@
 @props(['settings' => []])
 
-<header class="sticky top-0 z-40 border-b border-line/80 bg-foam/90 backdrop-blur" x-data="{ open: false }">
-    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-        <a href="{{ route('home') }}" class="text-lg font-semibold tracking-tight text-ink">
-            {{ $settings['company_name'] ?? 'Galaw Automations' }}
+@php
+    $links = [
+        ['Home', route('home'), request()->routeIs('home')],
+        ['About', route('about'), request()->routeIs('about')],
+        ['Services', route('services.index'), request()->routeIs('services.*')],
+        ['Portfolio', route('portfolio.index'), request()->routeIs('portfolio.*')],
+        ['Technologies', route('technologies'), request()->routeIs('technologies')],
+        ['Process', route('process'), request()->routeIs('process')],
+        ['FAQ', route('faq'), request()->routeIs('faq')],
+        ['Contact', route('contact'), request()->routeIs('contact')],
+    ];
+@endphp
+
+<header
+    class="sticky top-0 z-50 border-b border-line bg-paper"
+    x-data="{ open: false }"
+    @keydown.escape.window="open = false"
+>
+    <div class="site-shell flex h-[4.25rem] items-center gap-5 lg:gap-8">
+        <a
+            href="{{ route('home') }}"
+            class="flex shrink-0 items-center"
+            aria-label="Galaw Automations home"
+        >
+            <x-brand-logo variant="mark" />
         </a>
 
-        <nav class="hidden items-center gap-6 text-sm text-ink/70 lg:flex">
-            <a href="{{ route('about') }}" class="hover:text-ink">About</a>
-            <a href="{{ route('services.index') }}" class="hover:text-ink">Services</a>
-            <a href="{{ route('portfolio.index') }}" class="hover:text-ink">Portfolio</a>
-            <a href="{{ route('technologies') }}" class="hover:text-ink">Technologies</a>
-            <a href="{{ route('process') }}" class="hover:text-ink">Process</a>
-            <a href="{{ route('faq') }}" class="hover:text-ink">FAQ</a>
-            <a href="{{ route('contact') }}" class="hover:text-ink">Contact</a>
+        <nav class="hidden min-w-0 flex-1 items-center lg:flex" aria-label="Primary">
+            <ul class="flex flex-wrap items-center gap-x-1 gap-y-1">
+                @foreach ($links as [$label, $href, $active])
+                    <li>
+                        <a
+                            href="{{ $href }}"
+                            class="nav-link {{ $active ? 'nav-link-active' : '' }}"
+                            @if ($active) aria-current="page" @endif
+                        >{{ $label }}</a>
+                    </li>
+                @endforeach
+            </ul>
         </nav>
 
-        <div class="hidden lg:block">
-            <x-ui.button href="{{ route('request-service') }}">Start a Project</x-ui.button>
-        </div>
-
-        <button type="button" class="rounded-lg border border-line p-2 lg:hidden" @click="open = !open" aria-label="Toggle menu">
+        <button
+            type="button"
+            class="ml-auto inline-flex h-10 w-10 items-center justify-center border border-line text-ink transition hover:border-ink hover:bg-ink hover:text-white lg:hidden"
+            @click="open = !open"
+            :aria-expanded="open.toString()"
+            aria-controls="mobile-nav"
+            aria-label="Toggle menu"
+        >
             <x-icon name="menu" class="h-5 w-5" x-show="!open" />
             <x-icon name="x" class="h-5 w-5" x-cloak x-show="open" />
         </button>
     </div>
 
-    <div class="border-t border-line bg-white px-4 py-4 lg:hidden" x-cloak x-show="open">
-        <div class="flex flex-col gap-3 text-sm">
-            <a href="{{ route('about') }}">About</a>
-            <a href="{{ route('services.index') }}">Services</a>
-            <a href="{{ route('portfolio.index') }}">Portfolio</a>
-            <a href="{{ route('technologies') }}">Technologies</a>
-            <a href="{{ route('process') }}">Process</a>
-            <a href="{{ route('faq') }}">FAQ</a>
-            <a href="{{ route('contact') }}">Contact</a>
-            <x-ui.button href="{{ route('request-service') }}" class="mt-2 w-full justify-center">Start a Project</x-ui.button>
+    <div
+        id="mobile-nav"
+        class="border-t border-line bg-ink lg:hidden"
+        x-cloak
+        x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 -translate-y-1"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-1"
+        role="navigation"
+        aria-label="Mobile"
+    >
+        <div class="site-shell py-5">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">Explore</p>
+            <ul class="mt-4 space-y-1">
+                @foreach ($links as $index => [$label, $href, $active])
+                    <li>
+                        <a
+                            href="{{ $href }}"
+                            class="flex items-baseline gap-3 py-2.5 text-lg font-semibold transition {{ $active ? 'text-accent' : 'text-white hover:text-accent' }}"
+                            @click="open = false"
+                            @if ($active) aria-current="page" @endif
+                        >
+                            <span class="w-6 text-xs font-medium text-white/35">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span>{{ $label }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
         </div>
     </div>
 </header>

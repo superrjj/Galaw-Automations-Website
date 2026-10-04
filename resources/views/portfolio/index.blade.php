@@ -4,17 +4,17 @@
 @section('meta_description', 'Browse selected Galaw Automations projects and sample portfolio entries.')
 
 @section('content')
-<section class="border-b border-line bg-gradient-to-b from-mist to-foam">
-    <div class="mx-auto max-w-6xl px-4 py-16">
-        <div class="text-sm font-medium uppercase tracking-[0.18em] text-accent">Portfolio</div>
-        <h1 class="mt-3 text-4xl font-semibold tracking-tight text-ink">Selected work</h1>
-        <p class="mt-5 max-w-2xl text-lg text-ink/70">Published projects appear here. Sample entries are clearly labeled until real client work is ready to share.</p>
+<section class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-kicker">Portfolio</div>
+        <h1 class="page-title">Selected work</h1>
+        <p class="page-lead">Published projects appear here. Sample entries are clearly labeled until real client work is ready to share.</p>
     </div>
 </section>
 
-<section class="mx-auto max-w-6xl px-4 py-16">
+<section class="site-shell py-16">
     @if ($projects->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-ink/60">
+        <div class="border border-dashed border-line p-10 text-center text-ink-muted">
             No published portfolio projects yet.
         </div>
     @else

@@ -23,6 +23,21 @@ enum InquiryStatus: string
         };
     }
 
+    /**
+     * Visual tone for status badges in the admin UI.
+     */
+    public function tone(): string
+    {
+        return match ($this) {
+            self::New => 'info',
+            self::Reviewing => 'warn',
+            self::Contacted => 'accent',
+            self::Quoted => 'accent',
+            self::Completed => 'success',
+            self::Rejected => 'danger',
+        };
+    }
+
     public function isActive(): bool
     {
         return in_array($this, [

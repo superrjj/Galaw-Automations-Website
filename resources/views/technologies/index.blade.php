@@ -20,7 +20,7 @@
             </h2>
             <div class="mt-4 flex flex-wrap gap-2">
                 @foreach ($items as $technology)
-                    <x-technology-badge>{{ $technology->name }}</x-technology-badge>
+                    <x-technology-badge :technology="$technology" />
                 @endforeach
             </div>
         </div>

@@ -108,7 +108,7 @@
         />
         <ul class="mt-8 flex flex-wrap gap-2" role="list">
             @foreach ($technologies->take(16) as $technology)
-                <li><x-technology-badge>{{ $technology->name }}</x-technology-badge></li>
+                <li><x-technology-badge :technology="$technology" /></li>
             @endforeach
         </ul>
         <div class="mt-6">

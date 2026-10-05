@@ -69,7 +69,7 @@
                 <h3 class="font-semibold text-ink">Technologies</h3>
                 <div class="mt-4 flex flex-wrap gap-2">
                     @foreach ($project->technologies as $tech)
-                        <x-technology-badge>{{ $tech }}</x-technology-badge>
+                        <x-technology-badge :icon="\Illuminate\Support\Str::slug($tech)">{{ $tech }}</x-technology-badge>
                     @endforeach
                 </div>
             </div>

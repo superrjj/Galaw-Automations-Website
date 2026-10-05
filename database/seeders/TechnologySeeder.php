@@ -40,13 +40,15 @@ class TechnologySeeder extends Seeder
         ];
 
         foreach ($technologies as $technology) {
+            $slug = Str::slug($technology['name']);
+
             Technology::query()->updateOrCreate(
-                ['slug' => Str::slug($technology['name'])],
+                ['slug' => $slug],
                 [
                     'name' => $technology['name'],
                     'category' => $technology['category'],
                     'description' => null,
-                    'icon' => null,
+                    'icon' => $slug,
                     'is_active' => true,
                     'sort_order' => $technology['sort_order'],
                 ],

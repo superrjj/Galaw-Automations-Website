@@ -4,31 +4,33 @@
 @section('meta_description', ($settings['seo_description'] ?? 'Galaw Automations builds websites, mobile apps, business systems, AI solutions, integrations, and automation tools for businesses.'))
 
 @section('content')
-<section class="border-b border-line bg-paper">
-    <div class="site-shell py-16 sm:py-20 lg:py-24">
-        <div class="max-w-2xl">
-            <img
-                src="{{ asset('logo-galaw-automations-no-bg.png') }}"
-                alt="Galaw Automations"
-                class="h-16 w-auto sm:h-20"
-            >
+{{-- Hero matching agency system diagram mockup --}}
+<section class="hero-grid border-b border-line">
+    <div class="site-shell grid items-center gap-10 py-12 lg:grid-cols-2 lg:gap-6 lg:py-14 xl:gap-10">
+        <div class="max-w-xl">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
+                Your idea × our code = real solutions
+            </p>
 
-            <h1 class="mt-8 text-3xl font-semibold tracking-tight text-ink text-balance sm:text-4xl sm:leading-tight">
-                {{ $settings['tagline'] ?? 'Software solutions built around your business.' }}
+            <h1 class="mt-4 text-[2.75rem] font-bold tracking-tight text-ink text-balance sm:text-5xl sm:leading-[1.05] lg:text-[3.25rem]">
+                <span class="block">Build Smarter.</span>
+                <span class="mt-1 block text-accent">Automate Better.</span>
             </h1>
 
-            <p class="mt-5 max-w-xl text-base leading-relaxed text-ink-muted">
+            <p class="mt-5 max-w-md text-[15px] leading-relaxed text-ink-muted sm:text-base">
                 We design and build websites, mobile apps, business systems, AI features, integrations, and automation tools for companies that need reliable software.
             </p>
 
             <div class="mt-8 flex flex-wrap gap-3">
                 <x-ui.button href="{{ route('request-service') }}">
                     Start a Project
-                    <x-icon name="arrow-right" class="h-4 w-4" />
+                    <x-ui.icon name="arrow-right" class="h-4 w-4" />
                 </x-ui.button>
                 <x-ui.button href="{{ route('services.index') }}" variant="secondary">View Our Services</x-ui.button>
             </div>
         </div>
+
+        <x-home.hero-visual />
     </div>
 </section>
 
@@ -86,7 +88,7 @@
         />
         <a href="{{ route('portfolio.index') }}" class="link-arrow">
             View portfolio
-            <x-icon name="arrow-right" class="h-4 w-4" />
+            <x-ui.icon name="arrow-right" class="h-4 w-4" />
         </a>
     </div>
     <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -114,7 +116,7 @@
         <div class="mt-6">
             <a href="{{ route('technologies') }}" class="link-arrow">
                 View all technologies
-                <x-icon name="arrow-right" class="h-4 w-4" />
+                <x-ui.icon name="arrow-right" class="h-4 w-4" />
             </a>
         </div>
     </div>
@@ -139,7 +141,7 @@
     <div class="mt-6">
         <a href="{{ route('process') }}" class="link-arrow">
             Explore the full process
-            <x-icon name="arrow-right" class="h-4 w-4" />
+            <x-ui.icon name="arrow-right" class="h-4 w-4" />
         </a>
     </div>
 </section>
@@ -152,7 +154,7 @@
         </div>
         <x-ui.button href="{{ route('request-service') }}" variant="dark">
             Start a Project
-            <x-icon name="arrow-right" class="h-4 w-4" />
+            <x-ui.icon name="arrow-right" class="h-4 w-4" />
         </x-ui.button>
     </div>
 </section>

@@ -4,15 +4,16 @@
 ])
 
 @php
+    // Cropped asset removes empty PNG padding so height maps to the real mark.
     $height = match ($variant) {
-        'mark' => 'h-11',
-        'light' => 'h-10 sm:h-12',
-        default => 'h-10 sm:h-12',
+        'mark' => 'h-12 sm:h-14',
+        'light' => 'h-12 sm:h-14',
+        default => 'h-12 sm:h-14',
     };
 @endphp
 
 <img
-    src="{{ asset('logo-galaw-automations-no-bg.png') }}"
+    src="{{ asset('logo-galaw-automations-cropped.png') }}"
     alt="Galaw Automations"
-    {{ $attributes->merge(['class' => trim("$height w-auto object-contain $class")]) }}
+    {{ $attributes->merge(['class' => trim("$height w-auto object-contain object-left $class")]) }}
 >

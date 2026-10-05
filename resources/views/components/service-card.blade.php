@@ -6,7 +6,7 @@
 >
     <div class="flex items-start justify-between gap-4">
         <h3 class="text-base font-semibold text-ink group-hover:text-accent sm:text-lg">{{ $service->name }}</h3>
-        <x-icon name="arrow-right" class="mt-1 h-4 w-4 shrink-0 text-ink-muted group-hover:text-accent" aria-hidden="true" />
+        <x-ui.icon name="arrow-right" class="mt-1 h-4 w-4 shrink-0 text-ink-muted group-hover:text-accent" aria-hidden="true" />
     </div>
     <p class="mt-2 text-sm leading-relaxed text-ink-muted">{{ $service->short_description }}</p>
 </a>

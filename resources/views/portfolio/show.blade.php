@@ -49,7 +49,7 @@
                 <h2 class="text-2xl font-semibold text-ink">Features</h2>
                 <ul class="mt-3 space-y-2 text-sm text-ink-muted">
                     @foreach ($project->features as $feature)
-                        <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-accent" /> {{ $feature }}</li>
+                        <li class="flex gap-2"><x-ui.icon name="check" class="mt-0.5 h-4 w-4 text-accent" /> {{ $feature }}</li>
                     @endforeach
                 </ul>
             </div>

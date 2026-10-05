@@ -14,21 +14,17 @@
 @endphp
 
 <header
-    class="sticky top-0 z-50 border-b border-line bg-paper"
+    class="sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm"
     x-data="{ open: false }"
     @keydown.escape.window="open = false"
 >
-    <div class="site-shell flex h-[4.25rem] items-center gap-5 lg:gap-8">
-        <a
-            href="{{ route('home') }}"
-            class="flex shrink-0 items-center"
-            aria-label="Galaw Automations home"
-        >
+    <div class="site-shell grid h-[4.75rem] grid-cols-[auto_1fr_auto] items-center gap-4 sm:h-[5.25rem]">
+        <a href="{{ route('home') }}" class="flex shrink-0 items-center py-1" aria-label="Galaw Automations home">
             <x-brand-logo variant="mark" />
         </a>
 
-        <nav class="hidden min-w-0 flex-1 items-center lg:flex" aria-label="Primary">
-            <ul class="flex flex-wrap items-center gap-x-1 gap-y-1">
+        <nav class="hidden items-center justify-center lg:flex" aria-label="Primary">
+            <ul class="flex flex-wrap items-center justify-center gap-x-0.5">
                 @foreach ($links as [$label, $href, $active])
                     <li>
                         <a
@@ -41,51 +37,48 @@
             </ul>
         </nav>
 
-        <button
-            type="button"
-            class="ml-auto inline-flex h-10 w-10 items-center justify-center border border-line text-ink transition hover:border-ink hover:bg-ink hover:text-white lg:hidden"
-            @click="open = !open"
-            :aria-expanded="open.toString()"
-            aria-controls="mobile-nav"
-            aria-label="Toggle menu"
-        >
-            <x-icon name="menu" class="h-5 w-5" x-show="!open" />
-            <x-icon name="x" class="h-5 w-5" x-cloak x-show="open" />
-        </button>
+        <div class="flex items-center justify-end gap-2">
+            <x-ui.button href="{{ route('request-service') }}" class="hidden lg:inline-flex">
+                Start a Project
+                <x-ui.icon name="arrow-right" class="h-4 w-4" />
+            </x-ui.button>
+
+            <button
+                type="button"
+                class="inline-flex h-10 w-10 items-center justify-center border border-line text-ink transition hover:border-ink hover:bg-ink hover:text-white lg:hidden"
+                @click="open = !open"
+                :aria-expanded="open.toString()"
+                aria-controls="mobile-nav"
+                aria-label="Toggle menu"
+            >
+                <x-ui.icon name="menu" class="h-5 w-5" x-show="!open" />
+                <x-ui.icon name="x" class="h-5 w-5" x-cloak x-show="open" />
+            </button>
+        </div>
     </div>
 
     <div
         id="mobile-nav"
-        class="border-t border-line bg-ink lg:hidden"
+        class="border-t border-line bg-paper lg:hidden"
         x-cloak
         x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 -translate-y-1"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-1"
+        x-transition
         role="navigation"
         aria-label="Mobile"
     >
-        <div class="site-shell py-5">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">Explore</p>
-            <ul class="mt-4 space-y-1">
-                @foreach ($links as $index => [$label, $href, $active])
-                    <li>
-                        <a
-                            href="{{ $href }}"
-                            class="flex items-baseline gap-3 py-2.5 text-lg font-semibold transition {{ $active ? 'text-accent' : 'text-white hover:text-accent' }}"
-                            @click="open = false"
-                            @if ($active) aria-current="page" @endif
-                        >
-                            <span class="w-6 text-xs font-medium text-white/35">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
-                            <span>{{ $label }}</span>
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-
+        <div class="site-shell space-y-1 py-4">
+            @foreach ($links as [$label, $href, $active])
+                <a
+                    href="{{ $href }}"
+                    class="block rounded-md px-3 py-2.5 text-sm font-medium {{ $active ? 'bg-accent-soft text-ink' : 'text-ink-muted hover:bg-paper-soft hover:text-ink' }}"
+                    @click="open = false"
+                    @if ($active) aria-current="page" @endif
+                >{{ $label }}</a>
+            @endforeach
+            <x-ui.button href="{{ route('request-service') }}" class="mt-3 w-full justify-center">
+                Start a Project
+                <x-ui.icon name="arrow-right" class="h-4 w-4" />
+            </x-ui.button>
         </div>
     </div>
 </header>

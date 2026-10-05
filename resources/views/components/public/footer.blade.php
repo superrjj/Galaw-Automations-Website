@@ -37,7 +37,7 @@
                 @endif
                 <a href="{{ route('request-service') }}" class="inline-flex items-center gap-1 font-medium text-accent transition hover:text-white">
                     Start a Project
-                    <x-icon name="arrow-right" class="h-4 w-4" />
+                    <x-ui.icon name="arrow-right" class="h-4 w-4" />
                 </a>
             </div>
 

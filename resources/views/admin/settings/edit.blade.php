@@ -19,8 +19,9 @@
 <x-ui.textarea label="Vision" name="vision" :value="$settings['vision'] ?? ''" rows="3" />
 <x-ui.textarea label="Philosophy" name="philosophy" :value="$settings['philosophy'] ?? ''" rows="3" />
 <x-ui.textarea label="Values (one per line)" name="values" :value="$settings['values'] ?? ''" rows="4" />
-<x-ui.input label="Facebook URL" name="social_facebook" type="url" :value="$settings['social_facebook'] ?? ''" />
 <x-ui.input label="LinkedIn URL" name="social_linkedin" type="url" :value="$settings['social_linkedin'] ?? ''" />
+<x-ui.input label="Facebook URL" name="social_facebook" type="url" :value="$settings['social_facebook'] ?? ''" />
+<x-ui.input label="TikTok URL" name="social_tiktok" type="url" :value="$settings['social_tiktok'] ?? ''" />
 <x-ui.input label="GitHub URL" name="social_github" type="url" :value="$settings['social_github'] ?? ''" />
 <x-ui.input label="X URL" name="social_x" type="url" :value="$settings['social_x'] ?? ''" />
 <x-ui.button type="submit">Save settings</x-ui.button>

@@ -4,72 +4,330 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin') — Galaw Automations</title>
+
+    {{-- Set the nav state before first paint (no flash). Desktop remembers open / icon-rail; mobile always starts closed. --}}
+    <script>
+        (function () {
+            var d = document.documentElement, wide = window.matchMedia('(min-width: 1024px)').matches, s = null;
+            try { s = localStorage.getItem('adminNav'); } catch (e) {}
+            d.dataset.adminNav = wide ? (s === 'closed' ? 'closed' : 'open') : 'closed';
+        })();
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    <style>
+        /* ---- Admin shell: self-contained so it works without a Tailwind rebuild ----
+           data-admin-nav="open"   -> full sidebar (desktop) / drawer visible (mobile)
+           data-admin-nav="closed" -> icon rail (desktop)    / drawer hidden  (mobile) */
+        :root { --adm-w: 16.25rem; --adm-rail: 4.5rem; --adm-accent: #3dd1b0; }
+
+        .adm-sidebar {
+            position: fixed; inset: 0 auto 0 0; z-index: 50;
+            width: var(--adm-w); height: 100vh; height: 100dvh;
+            display: flex; flex-direction: column;
+            overflow: hidden;                 /* the sidebar itself never scrolls */
+            overscroll-behavior: contain;
+            border-right: 1px solid rgba(255, 255, 255, .08);
+        }
+        .adm-main { min-width: 0; min-height: 100vh; }
+        .adm-header { position: sticky; top: 0; z-index: 30; gap: 1rem; }
+
+        /* mobile: off-canvas drawer */
+        @media (max-width: 1023.98px) {
+            .adm-sidebar { transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
+            html[data-admin-nav="open"] .adm-sidebar { transform: none; visibility: visible; transition: transform .25s ease, visibility 0s; }
+            .adm-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(8, 16, 30, .55); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+            html[data-admin-nav="open"] .adm-overlay { opacity: 1; pointer-events: auto; }
+            html[data-admin-nav="open"] body { overflow: hidden; }
+        }
+
+        /* desktop: full sidebar <-> icon rail */
+        @media (min-width: 1024px) {
+            .adm-overlay { display: none; }
+            .adm-sidebar { transition: width .25s ease; }
+            .adm-main { margin-left: var(--adm-w); transition: margin-left .25s ease; }
+            html[data-admin-nav="closed"] .adm-sidebar { width: var(--adm-rail); }
+            html[data-admin-nav="closed"] .adm-main { margin-left: var(--adm-rail); }
+
+            /* rail look */
+            html[data-admin-nav="closed"] .adm-label,
+            html[data-admin-nav="closed"] .adm-chev,
+            html[data-admin-nav="closed"] .adm-brand p,
+            html[data-admin-nav="closed"] .adm-close { display: none; }
+            /* same logo in both states: in the rail it is only scaled down to fit the narrower width */
+            html[data-admin-nav="closed"] .adm-brand { padding: 1rem .5rem .75rem; }
+            html[data-admin-nav="closed"] .adm-brand > div { width: 100%; }
+            html[data-admin-nav="closed"] .adm-logo { display: flex; justify-content: center; padding: .25rem; }
+            html[data-admin-nav="closed"] .adm-logo > * { display: block; width: 100%; max-width: 100%; height: auto; }
+            html[data-admin-nav="closed"] .adm-nav { padding: .25rem .6rem; }
+            html[data-admin-nav="closed"] .adm-foot { padding: .5rem .6rem 1rem; }
+            html[data-admin-nav="closed"] .adm-link { justify-content: center; padding: .6rem 0; }
+            html[data-admin-nav="closed"] .adm-ico { width: 1.3rem; height: 1.3rem; }
+            html[data-admin-nav="closed"] .adm-sublink .adm-ico { width: 1.3rem; height: 1.3rem; }
+            /* groups become divider + always-visible icons, like a VS Code activity bar */
+            html[data-admin-nav="closed"] .adm-gbtn { display: none; }
+            html[data-admin-nav="closed"] .adm-group { margin-top: .5rem; padding-top: .5rem; border-top: 1px solid rgba(255, 255, 255, .1); }
+            html[data-admin-nav="closed"] .adm-sub { display: block; margin: 0; padding: 0; border: 0; }
+            html[data-admin-nav="closed"] .adm-sublink { padding: .6rem 0; }
+        }
+
+        .adm-brand { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding: 1.25rem 1.25rem 1rem; flex: none; }
+        .adm-brand p { margin: .6rem 0 0; font-size: .8125rem; color: rgba(255, 255, 255, .6); white-space: nowrap; }
+
+        .adm-nav { flex: 1 1 auto; min-height: 0; padding: .25rem .75rem; font-size: .875rem; overflow: hidden; }
+        /* safety net only: on very short screens the list can still be reached, with no visible scrollbar */
+        @media (max-height: 640px) { .adm-nav { overflow-y: auto; scrollbar-width: none; } .adm-nav::-webkit-scrollbar { display: none; } }
+
+        .adm-foot { flex: none; padding: .5rem .75rem 1rem; border-top: 1px solid rgba(255, 255, 255, .08); }
+
+        .adm-link {
+            display: flex; align-items: center; gap: .7rem; width: 100%;
+            padding: .5rem .75rem; margin-bottom: .125rem; border-radius: .5rem;
+            color: rgba(255, 255, 255, .7); text-decoration: none; background: none; border: 0;
+            font: inherit; line-height: 1.25; text-align: left; cursor: pointer; white-space: nowrap;
+            transition: background-color .15s, color .15s;
+        }
+        .adm-link:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+        .adm-link:focus-visible, .adm-close:focus-visible, .adm-toggle:focus-visible { outline: 2px solid var(--adm-accent); outline-offset: 2px; }
+        .adm-link.is-active { background: rgba(255, 255, 255, .11); color: #fff; box-shadow: inset 3px 0 0 var(--adm-accent); }
+        .adm-link.has-active { color: #fff; }
+        .adm-link.has-active .adm-ico, .adm-link.is-active .adm-ico { color: var(--adm-accent); }
+        .adm-muted { color: rgba(255, 255, 255, .5); }
+
+        .adm-ico { display: block; flex: none; width: 1.15rem; height: 1.15rem; }
+        .adm-sublink .adm-ico { width: 1rem; height: 1rem; }
+        .adm-label { overflow: hidden; text-overflow: ellipsis; }
+
+        /* collapsible groups (expanded sidebar only) */
+        .adm-sub { display: none; margin: .125rem 0 .375rem 1.45rem; padding-left: .6rem; border-left: 1px solid rgba(255, 255, 255, .12); }
+        .adm-group.is-open > .adm-sub { display: block; }
+        .adm-chev { display: block; flex: none; width: 1rem; height: 1rem; margin-left: auto; transition: transform .2s ease; opacity: .7; }
+        .adm-group.is-open > .adm-gbtn .adm-chev { transform: rotate(180deg); }
+        .adm-sublink { padding: .4rem .65rem; font-size: .8125rem; }
+
+        .adm-toggle, .adm-close {
+            display: inline-flex; align-items: center; justify-content: center; flex: none;
+            width: 2.25rem; height: 2.25rem; border-radius: .5rem; cursor: pointer;
+            transition: background-color .15s;
+        }
+        .adm-toggle { border: 1px solid rgba(15, 35, 64, .15); background: transparent; color: inherit; }
+        .adm-toggle:hover { background: rgba(15, 35, 64, .06); }
+        .adm-close { border: 0; background: rgba(255, 255, 255, .08); color: #fff; }
+        .adm-close:hover { background: rgba(255, 255, 255, .16); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .adm-sidebar, .adm-main, .adm-overlay, .adm-chev { transition: none !important; }
+        }
+    </style>
+    <noscript>
+        <style>
+            .adm-sidebar { transform: none; visibility: visible; }
+            .adm-sub { display: block; }
+        </style>
+    </noscript>
 </head>
 <body class="min-h-screen bg-paper-soft text-ink">
     <a href="#admin-content" class="skip-link">Skip to content</a>
-    <div class="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
-        <aside class="border-b border-line bg-ink text-white lg:border-b-0 lg:border-r lg:border-ink-soft" aria-label="Admin">
-            <div class="px-5 py-6">
-                <a href="{{ route('admin.dashboard') }}" class="inline-flex bg-paper px-2 py-1.5">
+
+    @php
+        $ico = fn (string $b) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;width:100%;height:100%">' . $b . '</svg>';
+
+        $teeth = '';
+        foreach (range(0, 315, 45) as $a) {
+            $teeth .= '<path d="M12 2.4v3.2" transform="rotate(' . $a . ' 12 12)" stroke-width="3" stroke-linecap="butt"/>';
+        }
+
+        $icons = [
+            'dashboard'    => $ico('<rect x="3" y="3" width="7" height="9" rx="1.2"/><rect x="14" y="3" width="7" height="5" rx="1.2"/><rect x="14" y="12" width="7" height="9" rx="1.2"/><rect x="3" y="16" width="7" height="5" rx="1.2"/>'),
+            'inbox'        => $ico('<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
+            'inquiries'    => $ico('<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 12h6M9 16h4"/>'),
+            'messages'     => $ico('<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>'),
+            'content'      => $ico('<path d="m12 2 10 5-10 5L2 7zM2 12l10 5 10-5M2 17l10 5 10-5"/>'),
+            'services'     => $ico('<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'),
+            'portfolio'    => $ico('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+            'technologies' => $ico('<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>'),
+            'testimonials' => $ico('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/>'),
+            'faqs'         => $ico('<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>'),
+            'settings'     => $ico('<circle cx="12" cy="12" r="6.6"/><circle cx="12" cy="12" r="2.6"/>' . $teeth),
+            'globe'        => $ico('<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c2.8 2.7 4.2 6 4.2 10s-1.4 7.3-4.2 10c-2.8-2.7-4.2-6-4.2-10S9.2 4.7 12 2z"/>'),
+            'logout'       => $ico('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'),
+            'chevron'      => $ico('<path d="m6 9 6 6 6-6"/>'),
+            'menu'         => $ico('<path d="M4 6h16M4 12h16M4 18h16"/>'),
+            'x'            => $ico('<path d="M18 6 6 18M6 6l12 12"/>'),
+        ];
+
+        // [label, href, active, icon]
+        $nav = [
+            ['type' => 'link', 'label' => 'Dashboard', 'href' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard'), 'icon' => 'dashboard'],
+            ['type' => 'group', 'label' => 'Inbox', 'icon' => 'inbox', 'children' => [
+                ['Inquiries', route('admin.inquiries.index'), request()->routeIs('admin.inquiries.*'), 'inquiries'],
+                ['Messages', route('admin.messages.index'), request()->routeIs('admin.messages.*'), 'messages'],
+            ]],
+            ['type' => 'group', 'label' => 'Content', 'icon' => 'content', 'children' => [
+                ['Services', route('admin.services.index'), request()->routeIs('admin.services.*'), 'services'],
+                ['Portfolio', route('admin.portfolio.index'), request()->routeIs('admin.portfolio.*'), 'portfolio'],
+                ['Technologies', route('admin.technologies.index'), request()->routeIs('admin.technologies.*'), 'technologies'],
+                ['Testimonials', route('admin.testimonials.index'), request()->routeIs('admin.testimonials.*'), 'testimonials'],
+                ['FAQs', route('admin.faqs.index'), request()->routeIs('admin.faqs.*'), 'faqs'],
+            ]],
+            ['type' => 'link', 'label' => 'Settings', 'href' => route('admin.settings.edit'), 'active' => request()->routeIs('admin.settings.*'), 'icon' => 'settings'],
+        ];
+    @endphp
+
+    <div class="adm-overlay" data-admin-nav-toggle aria-hidden="true"></div>
+
+    <aside id="admin-sidebar" class="adm-sidebar bg-ink text-white" aria-label="Admin">
+        <div class="adm-brand">
+            <div>
+                <a href="{{ route('admin.dashboard') }}" class="adm-logo inline-flex bg-paper px-2 py-1.5">
                     <x-brand-logo variant="mark" class="h-8" />
                 </a>
-                <p class="mt-3 text-sm text-white/60">Website management</p>
+                <p>Website management</p>
             </div>
-            <nav class="space-y-1 px-3 pb-6 text-sm" aria-label="Admin">
-                @php
-                    $links = [
-                        ['Dashboard', route('admin.dashboard'), request()->routeIs('admin.dashboard')],
-                        ['Inquiries', route('admin.inquiries.index'), request()->routeIs('admin.inquiries.*')],
-                        ['Services', route('admin.services.index'), request()->routeIs('admin.services.*')],
-                        ['Portfolio', route('admin.portfolio.index'), request()->routeIs('admin.portfolio.*')],
-                        ['Technologies', route('admin.technologies.index'), request()->routeIs('admin.technologies.*')],
-                        ['Testimonials', route('admin.testimonials.index'), request()->routeIs('admin.testimonials.*')],
-                        ['FAQs', route('admin.faqs.index'), request()->routeIs('admin.faqs.*')],
-                        ['Messages', route('admin.messages.index'), request()->routeIs('admin.messages.*')],
-                        ['Settings', route('admin.settings.edit'), request()->routeIs('admin.settings.*')],
-                    ];
-                @endphp
-                @foreach ($links as [$label, $href, $active])
-                    <a
-                        href="{{ $href }}"
-                        class="block rounded-md px-3 py-2 {{ $active ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white' }}"
-                        @if ($active) aria-current="page" @endif
-                    >{{ $label }}</a>
-                @endforeach
-                <a href="{{ route('home') }}" class="mt-4 block rounded-md px-3 py-2 text-white/50 hover:text-white">View website</a>
-                <form method="POST" action="{{ route('logout') }}" class="px-3 pt-2">
-                    @csrf
-                    <button type="submit" class="text-white/50 hover:text-white">Log out</button>
-                </form>
-            </nav>
-        </aside>
+            <button type="button" class="adm-close" data-admin-nav-toggle aria-controls="admin-sidebar" aria-expanded="false" aria-label="Close navigation">
+                <span class="adm-ico">{!! $icons['x'] !!}</span>
+            </button>
+        </div>
 
-        <div class="min-w-0">
-            <header class="flex items-center justify-between border-b border-line bg-paper px-4 py-4 sm:px-6">
+        <nav class="adm-nav" aria-label="Admin">
+            @foreach ($nav as $item)
+                @if ($item['type'] === 'link')
+                    <a
+                        href="{{ $item['href'] }}"
+                        data-label="{{ $item['label'] }}"
+                        class="adm-link {{ $item['active'] ? 'is-active' : '' }}"
+                        @if ($item['active']) aria-current="page" @endif
+                    >
+                        <span class="adm-ico">{!! $icons[$item['icon']] !!}</span>
+                        <span class="adm-label">{{ $item['label'] }}</span>
+                    </a>
+                @else
+                    @php $open = collect($item['children'])->contains(fn ($c) => $c[2]); @endphp
+                    <div class="adm-group {{ $open ? 'is-open' : '' }}">
+                        <button type="button" class="adm-link adm-gbtn {{ $open ? 'has-active' : '' }}" data-adm-group aria-expanded="{{ $open ? 'true' : 'false' }}">
+                            <span class="adm-ico">{!! $icons[$item['icon']] !!}</span>
+                            <span class="adm-label">{{ $item['label'] }}</span>
+                            <span class="adm-chev">{!! $icons['chevron'] !!}</span>
+                        </button>
+                        <div class="adm-sub">
+                            @foreach ($item['children'] as [$label, $href, $active, $icon])
+                                <a
+                                    href="{{ $href }}"
+                                    data-label="{{ $label }}"
+                                    class="adm-link adm-sublink {{ $active ? 'is-active' : '' }}"
+                                    @if ($active) aria-current="page" @endif
+                                >
+                                    <span class="adm-ico">{!! $icons[$icon] !!}</span>
+                                    <span class="adm-label">{{ $label }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </nav>
+
+        <div class="adm-foot">
+            <a href="{{ route('home') }}" data-label="View website" class="adm-link adm-muted">
+                <span class="adm-ico">{!! $icons['globe'] !!}</span>
+                <span class="adm-label">View website</span>
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" data-label="Log out" class="adm-link adm-muted">
+                    <span class="adm-ico">{!! $icons['logout'] !!}</span>
+                    <span class="adm-label">Log out</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <header class="adm-header flex items-center justify-between border-b border-line bg-paper px-4 py-4 sm:px-6">
+            <div style="display:flex; align-items:center; gap:.9rem; min-width:0;">
+                <button type="button" class="adm-toggle" data-admin-nav-toggle aria-controls="admin-sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="adm-ico">{!! $icons['menu'] !!}</span>
+                </button>
                 <div>
                     <h1 class="text-xl font-semibold tracking-tight">@yield('heading', 'Dashboard')</h1>
                     <p class="text-sm text-ink-muted">@yield('subheading', 'Manage Galaw Automations website content')</p>
                 </div>
-                <div class="text-sm text-ink-muted">{{ auth()->user()?->name }}</div>
-            </header>
-
-            <div id="admin-content" class="px-4 py-6 sm:px-6">
-                @if (session('success'))
-                    <div class="mb-4">
-                        <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="mb-4">
-                        <x-ui.alert type="error">Please check the highlighted fields.</x-ui.alert>
-                    </div>
-                @endif
-                @yield('content')
             </div>
+            <div class="text-sm text-ink-muted">{{ auth()->user()?->name }}</div>
+        </header>
+
+        <div id="admin-content" class="px-4 py-6 sm:px-6">
+            @if (session('success'))
+                <div class="mb-4">
+                    <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="mb-4">
+                    <x-ui.alert type="error">Please check the highlighted fields.</x-ui.alert>
+                </div>
+            @endif
+            @yield('content')
         </div>
     </div>
+
     @livewireScripts
+
+    <script>
+        (function () {
+            var root = document.documentElement,
+                mq = window.matchMedia('(min-width: 1024px)'),
+                toggles = document.querySelectorAll('[data-admin-nav-toggle]'),
+                labelled = document.querySelectorAll('.adm-sidebar [data-label]');
+
+            function saved() { try { return localStorage.getItem('adminNav'); } catch (e) { return null; } }
+
+            // native tooltips only while the sidebar is an icon rail
+            function syncTitles() {
+                var rail = mq.matches && root.dataset.adminNav === 'closed';
+                labelled.forEach(function (el) {
+                    if (rail) { el.setAttribute('title', el.dataset.label); } else { el.removeAttribute('title'); }
+                });
+            }
+
+            function set(state, persist) {
+                root.dataset.adminNav = state;
+                toggles.forEach(function (b) { b.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false'); });
+                if (persist && mq.matches) { try { localStorage.setItem('adminNav', state); } catch (e) {} }
+                syncTitles();
+            }
+
+            set(root.dataset.adminNav === 'open' ? 'open' : 'closed', false);
+
+            toggles.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var opening = root.dataset.adminNav !== 'open';
+                    set(opening ? 'open' : 'closed', true);
+                    if (opening && !mq.matches) { var c = document.querySelector('.adm-close'); if (c) c.focus(); }
+                });
+            });
+
+            // submenu accordion
+            document.querySelectorAll('[data-adm-group]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var group = btn.closest('.adm-group'), open = !group.classList.contains('is-open');
+                    group.classList.toggle('is-open', open);
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !mq.matches && root.dataset.adminNav === 'open') {
+                    set('closed', false);
+                    var t = document.querySelector('.adm-toggle'); if (t) t.focus();
+                }
+            });
+
+            var onChange = function () { set(mq.matches ? (saved() === 'closed' ? 'closed' : 'open') : 'closed', false); };
+            if (mq.addEventListener) { mq.addEventListener('change', onChange); } else if (mq.addListener) { mq.addListener(onChange); }
+        })();
+    </script>
 </body>
 </html>

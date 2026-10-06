@@ -28,6 +28,7 @@ class UpdateSettingsRequest extends FormRequest
             'values',
             'social_facebook',
             'social_linkedin',
+            'social_tiktok',
             'social_github',
             'social_x',
         ];
@@ -64,6 +65,7 @@ class UpdateSettingsRequest extends FormRequest
             'values' => ['nullable', 'string'],
             'social_facebook' => ['nullable', 'url', 'max:255'],
             'social_linkedin' => ['nullable', 'url', 'max:255'],
+            'social_tiktok' => ['nullable', 'url', 'max:255'],
             'social_github' => ['nullable', 'url', 'max:255'],
             'social_x' => ['nullable', 'url', 'max:255'],
         ];

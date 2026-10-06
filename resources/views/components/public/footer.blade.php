@@ -43,8 +43,9 @@
 
             @php
                 $socials = collect([
-                    'Facebook' => $settings['social_facebook'] ?? null,
                     'LinkedIn' => $settings['social_linkedin'] ?? null,
+                    'Facebook' => $settings['social_facebook'] ?? null,
+                    'TikTok' => $settings['social_tiktok'] ?? null,
                     'GitHub' => $settings['social_github'] ?? null,
                     'X' => $settings['social_x'] ?? null,
                 ])->filter();

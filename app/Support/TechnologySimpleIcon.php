@@ -64,6 +64,9 @@ final class TechnologySimpleIcon
             'api' => 'swagger',
             'apis' => 'swagger',
             'supabase' => 'supabase',
+            'nest' => 'nestjs',
+            'nestjs' => 'nestjs',
+            'nest-js' => 'nestjs',
             // OpenAI is not published in the current Simple Icons set.
             'openai' => null,
         ];

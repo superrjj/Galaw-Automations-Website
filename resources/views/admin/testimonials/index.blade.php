@@ -23,7 +23,7 @@
     .sa-name { font-weight: 600; color: inherit; text-decoration: none; }
     .sa-name:hover { text-decoration: underline; }
     .sa-muted { color: #5b6b7e; }
-    .    .sa-col-actions { width: 1%; white-space: nowrap; text-align: right; }
+    .sa-col-actions { width: 1%; white-space: nowrap; text-align: right; }
 
     .sa-status-off { color: #8a97a8; }
 
@@ -44,14 +44,6 @@
 
     .sa-empty { padding: 3rem 1rem; text-align: center; }
     .sa-empty p { margin: 0; color: #5b6b7e; }
-
-    .sa-dialog { width: min(26rem, calc(100vw - 2rem)); padding: 0; border: 1px solid #e3e8ee; border-radius: .75rem; box-shadow: 0 20px 50px -20px rgba(15, 35, 64, .45); color: #0f2340; }
-    .sa-dialog::backdrop { background: rgba(15, 35, 64, .45); }
-    .sa-dialog form { padding: 1.5rem; }
-    .sa-dialog h2 { margin: 0 0 .5rem; font-size: 1.125rem; font-weight: 600; }
-    .sa-dialog p { margin: 0; font-size: .875rem; line-height: 1.6; color: #5b6b7e; }
-    .sa-dialog-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
-    .sa-dialog .sa-btn { height: 2.25rem; padding: 0 1rem; }
 </style>
 
 <div class="sa-toolbar">
@@ -123,37 +115,8 @@
 
 <div class="mt-6">{{ $testimonials->links() }}</div>
 
-{{-- One confirmation dialog, reused for every row --}}
-<dialog id="sa-delete" class="sa-dialog" aria-labelledby="sa-delete-title">
-    <form method="POST" action="">
-        @csrf
-        @method('DELETE')
-        <h2 id="sa-delete-title">Delete this testimonial?</h2>
-        <p>“<strong data-name></strong>” will be permanently removed from the website. This can’t be undone.</p>
-        <div class="sa-dialog-actions">
-            <button type="button" class="sa-btn" data-close>Cancel</button>
-            <button type="submit" class="sa-btn sa-btn-danger">Delete testimonial</button>
-        </div>
-    </form>
-</dialog>
-
-<script>
-    (function () {
-        var dlg = document.getElementById('sa-delete');
-        if (!dlg || typeof dlg.showModal !== 'function') return;
-        var form = dlg.querySelector('form'), nameEl = dlg.querySelector('[data-name]'), last = null;
-
-        document.querySelectorAll('[data-delete-url]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                last = btn;
-                form.action = btn.dataset.deleteUrl;
-                nameEl.textContent = btn.dataset.name;
-                dlg.showModal();
-            });
-        });
-        dlg.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { dlg.close(); }); });
-        dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
-        dlg.addEventListener('close', function () { if (last) last.focus(); });
-    })();
-</script>
+<x-admin.delete-confirm
+    title="Delete this testimonial?"
+    confirm="Delete testimonial"
+/>
 @endsection

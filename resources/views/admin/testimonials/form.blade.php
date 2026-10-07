@@ -25,14 +25,6 @@
     .sa-btn-delete:hover { background: #fef3f2; border-color: #fecdca; }
     .sa-btn-danger { background: #b42318; border-color: #b42318; color: #fff; }
     .sa-btn-danger:hover { background: #912018; border-color: #912018; }
-
-    .sa-dialog { width: min(26rem, calc(100vw - 2rem)); padding: 0; border: 1px solid #e3e8ee; border-radius: .75rem; box-shadow: 0 20px 50px -20px rgba(15, 35, 64, .45); color: #0f2340; }
-    .sa-dialog::backdrop { background: rgba(15, 35, 64, .45); }
-    .sa-dialog form { padding: 1.5rem; }
-    .sa-dialog h2 { margin: 0 0 .5rem; font-size: 1.125rem; font-weight: 600; }
-    .sa-dialog p { margin: 0; font-size: .875rem; line-height: 1.6; color: #5b6b7e; }
-    .sa-dialog-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
-    .sa-dialog .sa-btn { height: 2.25rem; padding: 0 1rem; }
 </style>
 
 <form method="POST" action="{{ $testimonial ? route('admin.testimonials.update', $testimonial) : route('admin.testimonials.store') }}" class="sf-grid">
@@ -87,31 +79,10 @@
 </form>
 
 @if ($testimonial)
-    {{-- Same confirmation dialog as the index; kept outside the main form so the forms don't nest --}}
-    <dialog id="sa-delete" class="sa-dialog" aria-labelledby="sa-delete-title">
-        <form method="POST" action="{{ route('admin.testimonials.destroy', $testimonial) }}">
-            @csrf
-            @method('DELETE')
-            <h2 id="sa-delete-title">Delete this testimonial?</h2>
-            <p>“<strong>{{ $testimonial->client_name }}</strong>” will be permanently removed from the website. This can’t be undone.</p>
-            <div class="sa-dialog-actions">
-                <button type="button" class="sa-btn" data-close>Cancel</button>
-                <button type="submit" class="sa-btn sa-btn-danger">Delete testimonial</button>
-            </div>
-        </form>
-    </dialog>
-
-    <script>
-        (function () {
-            var dlg = document.getElementById('sa-delete'), open = document.querySelector('[data-open-delete]');
-            if (!dlg || !open) return;
-            open.addEventListener('click', function () {
-                if (typeof dlg.showModal === 'function') dlg.showModal();
-                else if (confirm('Delete this testimonial?')) dlg.querySelector('form').submit();
-            });
-            dlg.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { dlg.close(); }); });
-            dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
-            dlg.addEventListener('close', function () { open.focus(); });
-        })();
-    </script>
+    <x-admin.delete-confirm
+        title="Delete this testimonial?"
+        confirm="Delete testimonial"
+        :action="route('admin.testimonials.destroy', $testimonial)"
+        :name="$testimonial->client_name"
+    />
 @endif

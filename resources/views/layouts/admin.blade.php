@@ -120,6 +120,101 @@
         @media (prefers-reduced-motion: reduce) {
             .adm-sidebar, .adm-main, .adm-overlay, .adm-chev { transition: none !important; }
         }
+
+        /* Simple delete dialog — keep centered (CSS resets strip dialog margin:auto) */
+        .sa-dialog {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(26rem, calc(100vw - 2rem));
+            height: fit-content;
+            padding: 0;
+            border: 1px solid #e3e8ee;
+            border-radius: .75rem;
+            background: #fff;
+            color: #0f2340;
+            box-shadow: 0 20px 50px -20px rgba(15, 35, 64, .45);
+        }
+        .sa-dialog::backdrop { background: rgba(15, 35, 64, .45); }
+        .sa-dialog form { margin: 0; padding: 1.5rem; }
+        .sa-dialog h2 { margin: 0 0 .5rem; font-size: 1.125rem; font-weight: 600; }
+        .sa-dialog p { margin: 0; font-size: .875rem; line-height: 1.6; color: #5b6b7e; }
+        .sa-dialog-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
+        .sa-dialog .sa-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            height: 2.25rem; padding: 0 1rem;
+            border: 1px solid #dfe5ec; border-radius: .4rem; background: #fff; color: #27384f;
+            font: inherit; font-size: .8125rem; font-weight: 500; cursor: pointer;
+        }
+        .sa-dialog .sa-btn:hover { background: #f4f7fa; }
+        .sa-dialog .sa-btn-danger { background: #b42318; border-color: #b42318; color: #fff; }
+        .sa-dialog .sa-btn-danger:hover { background: #912018; border-color: #912018; }
+
+        /* Flash toast after create / update / delete */
+        .adm-toast-host {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            width: min(22rem, calc(100vw - 2rem));
+            pointer-events: none;
+        }
+        .adm-toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: .65rem;
+            padding: .85rem .9rem;
+            border-radius: .5rem;
+            border: 1px solid transparent;
+            background: #0f2340;
+            color: #fff;
+            box-shadow: 0 12px 28px -10px rgba(15, 35, 64, .45);
+            font-size: .875rem;
+            line-height: 1.4;
+            transform: translateY(-.35rem);
+            opacity: 0;
+            animation: adm-toast-in .28s ease forwards;
+        }
+        .adm-toast.is-leaving {
+            animation: adm-toast-out .22s ease forwards;
+        }
+        .adm-toast.is-success { border-color: rgba(61, 209, 176, .45); }
+        .adm-toast.is-success .adm-toast-icon { color: var(--adm-accent); }
+        .adm-toast.is-error { background: #7a1c16; border-color: rgba(254, 205, 202, .35); }
+        .adm-toast.is-error .adm-toast-icon { color: #fecdca; }
+        .adm-toast-icon { flex: none; display: grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-top: .1rem; }
+        .adm-toast-icon svg { width: 1.15rem; height: 1.15rem; }
+        .adm-toast-msg { margin: 0; flex: 1; min-width: 0; }
+        .adm-toast-close {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            margin: -.15rem -.2rem 0 0;
+            border: 0;
+            border-radius: .35rem;
+            background: transparent;
+            color: rgba(255, 255, 255, .7);
+            cursor: pointer;
+        }
+        .adm-toast-close:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+        .adm-toast-close svg { width: .95rem; height: .95rem; }
+        @keyframes adm-toast-in {
+            from { opacity: 0; transform: translateY(-.5rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes adm-toast-out {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-.35rem); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .adm-toast, .adm-toast.is-leaving { animation: none; opacity: 1; transform: none; }
+        }
     </style>
     <noscript>
         <style>
@@ -259,11 +354,6 @@
         </header>
 
         <div id="admin-content" class="px-4 py-6 sm:px-6">
-            @if (session('success'))
-                <div class="mb-4">
-                    <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
-                </div>
-            @endif
             @if ($errors->any())
                 <div class="mb-4">
                     <x-ui.alert type="error">Please check the highlighted fields.</x-ui.alert>
@@ -273,10 +363,32 @@
         </div>
     </div>
 
+    @if (session('success') || session('error'))
+        <div class="adm-toast-host" aria-atomic="true">
+            @if (session('success'))
+                <x-admin.toast type="success" :message="session('success')" />
+            @endif
+            @if (session('error'))
+                <x-admin.toast type="error" :message="session('error')" />
+            @endif
+        </div>
+    @endif
+
     @livewireScripts
 
     <script>
         (function () {
+            document.querySelectorAll('[data-adm-toast]').forEach(function (toast) {
+                var hide = function () {
+                    if (toast.classList.contains('is-leaving')) return;
+                    toast.classList.add('is-leaving');
+                    window.setTimeout(function () { toast.remove(); }, 220);
+                };
+                var btn = toast.querySelector('[data-adm-toast-close]');
+                if (btn) btn.addEventListener('click', hide);
+                window.setTimeout(hide, 4200);
+            });
+
             var root = document.documentElement,
                 mq = window.matchMedia('(min-width: 1024px)'),
                 toggles = document.querySelectorAll('[data-admin-nav-toggle]'),

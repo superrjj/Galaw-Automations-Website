@@ -10,9 +10,6 @@
 
     <form method="POST" action="{{ route('login.store') }}" class="mt-8 space-y-4">
         @csrf
-        @if ($errors->any())
-            <x-ui.alert type="error">{{ $errors->first() }}</x-ui.alert>
-        @endif
         <x-ui.input label="Email" name="email" type="email" required />
         <x-ui.input label="Password" name="password" type="password" required />
         <label class="flex items-center gap-2 text-sm text-ink/70">

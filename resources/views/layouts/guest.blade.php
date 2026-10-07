@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Login') — Galaw Automations</title>
-    <link rel="icon" href="{{ asset('logo-galaw-automations-no-bg.png') }}" type="image/png">
+    @include('partials.favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-paper-soft text-ink">
@@ -18,5 +18,9 @@
             @yield('content')
         </div>
     </div>
+
+    @if ($errors->any())
+        <x-public.flash-dialog type="error" title="Sign in failed" :message="$errors->first()" />
+    @endif
 </body>
 </html>

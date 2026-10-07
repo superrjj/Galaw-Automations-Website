@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin') — Galaw Automations</title>
+    @include('partials.favicon')
 
     {{-- Set the nav state before first paint (no flash). Desktop remembers open / icon-rail; mobile always starts closed. --}}
     <script>
@@ -54,13 +55,15 @@
             /* rail look */
             html[data-admin-nav="closed"] .adm-label,
             html[data-admin-nav="closed"] .adm-chev,
-            html[data-admin-nav="closed"] .adm-brand p,
+            html[data-admin-nav="closed"] .adm-brand-title,
+            html[data-admin-nav="closed"] .adm-brand-tag,
             html[data-admin-nav="closed"] .adm-close { display: none; }
             /* same logo in both states: in the rail it is only scaled down to fit the narrower width */
             html[data-admin-nav="closed"] .adm-brand { padding: 1rem .5rem .75rem; }
             html[data-admin-nav="closed"] .adm-brand > div { width: 100%; }
-            html[data-admin-nav="closed"] .adm-logo { display: flex; justify-content: center; padding: .25rem; }
-            html[data-admin-nav="closed"] .adm-logo > * { display: block; width: 100%; max-width: 100%; height: auto; }
+            html[data-admin-nav="closed"] .adm-brand-lockup { justify-content: center; width: 100%; }
+            html[data-admin-nav="closed"] .adm-logo { display: flex; justify-content: center; padding: .35rem; }
+            html[data-admin-nav="closed"] .adm-logo img { width: auto; max-width: 1.75rem; height: 1.75rem !important; }
             html[data-admin-nav="closed"] .adm-nav { padding: .25rem .6rem; }
             html[data-admin-nav="closed"] .adm-foot { padding: .5rem .6rem 1rem; }
             html[data-admin-nav="closed"] .adm-link { justify-content: center; padding: .6rem 0; }
@@ -74,7 +77,43 @@
         }
 
         .adm-brand { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding: 1.25rem 1.25rem 1rem; flex: none; }
-        .adm-brand p { margin: .6rem 0 0; font-size: .8125rem; color: rgba(255, 255, 255, .6); white-space: nowrap; }
+        .adm-brand-lockup { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+        .adm-logo {
+            flex: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: .2rem .35rem;
+            border-radius: .4rem;
+            background: #fff;
+            text-decoration: none;
+        }
+        .adm-sidebar .adm-logo img {
+            display: block;
+            height: 2rem !important;
+            width: auto !important;
+            max-width: 2.35rem;
+            object-fit: contain;
+        }
+        .adm-brand-text { min-width: 0; }
+        .adm-brand-title {
+            margin: 0;
+            font-size: .8125rem;
+            font-weight: 600;
+            line-height: 1.25;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .adm-brand-tag {
+            margin: .15rem 0 0;
+            font-size: .6875rem;
+            color: rgba(255, 255, 255, .55);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         .adm-nav { flex: 1 1 auto; min-height: 0; padding: .25rem .75rem; font-size: .875rem; overflow: hidden; }
         /* safety net only: on very short screens the list can still be reached, with no visible scrollbar */
@@ -275,11 +314,14 @@
 
     <aside id="admin-sidebar" class="adm-sidebar bg-ink text-white" aria-label="Admin">
         <div class="adm-brand">
-            <div>
-                <a href="{{ route('admin.dashboard') }}" class="adm-logo inline-flex bg-paper px-2 py-1.5">
-                    <x-brand-logo variant="mark" class="h-8" />
+            <div class="adm-brand-lockup">
+                <a href="{{ route('admin.dashboard') }}" class="adm-logo" aria-label="Galaw Automations admin home">
+                    <x-brand-logo variant="mark" />
                 </a>
-                <p>Website management</p>
+                <div class="adm-brand-text">
+                    <p class="adm-brand-title">Galaw Automations</p>
+                    <p class="adm-brand-tag">Website management</p>
+                </div>
             </div>
             <button type="button" class="adm-close" data-admin-nav-toggle aria-controls="admin-sidebar" aria-expanded="false" aria-label="Close navigation">
                 <span class="adm-ico">{!! $icons['x'] !!}</span>

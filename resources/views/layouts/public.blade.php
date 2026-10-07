@@ -10,7 +10,7 @@
     <meta property="og:description" content="@yield('meta_description', $siteSettings['seo_description'] ?? '')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="@yield('canonical', url()->current())">
-    <link rel="icon" href="{{ asset('logo-galaw-automations-no-bg.png') }}" type="image/png">
+    @include('partials.favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -19,17 +19,28 @@
 
     <x-public.navbar :settings="$siteSettings ?? []" />
 
-    @if (session('success'))
-        <div class="site-shell pt-4">
-            <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
-        </div>
-    @endif
-
     <main id="main-content" class="flex-1">
         @yield('content')
     </main>
 
     <x-public.footer :settings="$siteSettings ?? []" />
+
+    @if (session('success'))
+        <x-public.flash-dialog type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-public.flash-dialog type="error" :message="session('error')" />
+    @endif
+
+    @if ($errors->any())
+        <x-public.flash-dialog
+            type="error"
+            title="Please fix the form"
+            message="Check the highlighted fields and try again."
+        />
+    @endif
+
     @livewireScripts
 </body>
 </html>

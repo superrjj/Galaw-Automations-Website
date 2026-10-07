@@ -31,11 +31,6 @@
         @submit="submitting = true"
     >
         @csrf
-        @if ($errors->any())
-            <div class="mb-6">
-                <x-ui.alert type="error">Please check the highlighted fields and try again.</x-ui.alert>
-            </div>
-        @endif
 
         <fieldset class="form-section">
             <legend class="form-section-title">Your details</legend>
